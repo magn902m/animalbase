@@ -2,8 +2,9 @@
 
 window.addEventListener("DOMContentLoaded", start);
 
-let allAnimals = [];
-// const HTML = {};
+const HTML = {};
+let allAnimals = [],
+  filter = "*";
 
 // The prototype for all animals:
 const Animal = {
@@ -16,24 +17,13 @@ const Animal = {
 function start() {
   console.log("ready");
 
-  // TODO: Add event-listeners to filter and sort buttons
-
-  // HTML.catBtn = document.querySelector("")
-
+  HTML.allFilterBtn = document.querySelectorAll("[data-action=filter]");
+  // Add event-listeners to btn and run the filter animal list
+  HTML.allFilterBtn.forEach((btn) => {
+    btn.addEventListener("click", createAnimalList);
+  });
   loadJSON();
 }
-
-// get filter depeding on data-filter attribue
-
-// filter allAnimals with correct filter function and put info filterAnmimals
-
-// Call displayList(filteredAnimals)
-
-// isCat function
-
-// isDog function
-
-// all function
 
 async function loadJSON() {
   const response = await fetch("animals.json");
@@ -46,7 +36,7 @@ async function loadJSON() {
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
 
-  // TODO: This might not be the function we want to call first
+  // This function is only runing one time, and then the filter button chance the data.
   displayList(allAnimals);
 }
 
@@ -62,6 +52,7 @@ function preapareObject(jsonObject) {
   return animal;
 }
 
+// ----- View -----
 function displayList(animals) {
   // clear the list
   document.querySelector("#list tbody").innerHTML = "";
@@ -82,4 +73,50 @@ function displayAnimal(animal) {
 
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
+}
+
+// ----- Model -----
+function createAnimalList() {
+  let filteredAnimals;
+  // get filter depending on data-filter attribue
+  filter = this.dataset.filter;
+  // filter allAnimals with correct filter function and put info filterAnmimals
+  if (filter === "*") {
+    filteredAnimals = getFilteredData(all);
+  } else if (filter === "cat") {
+    filteredAnimals = getFilteredData(isCat);
+  } else if (filter === "dog") {
+    filteredAnimals = getFilteredData(isDog);
+  }
+  displayList(filteredAnimals);
+}
+
+// Filtering function which takes a filtering function as an argument
+function getFilteredData(filterFunction) {
+  let filteredAnimals = allAnimals.filter(filterFunction);
+  return filteredAnimals;
+}
+
+// ----- Controller -----
+// isCat function
+function isCat(animal, i, arr) {
+  if (animal.type === "cat") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// isDog function
+function isDog(animal, i, arr) {
+  if (animal.type === "dog") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// all function
+function all() {
+  return true;
 }
