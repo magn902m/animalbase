@@ -4,7 +4,8 @@ window.addEventListener("DOMContentLoaded", start);
 
 const HTML = {};
 let allAnimals = [],
-  filter = "*";
+  filter = "*",
+  filteredAnimals;
 
 // The prototype for all animals:
 const Animal = {
@@ -18,9 +19,13 @@ function start() {
   console.log("ready");
 
   HTML.allFilterBtn = document.querySelectorAll("[data-action=filter]");
+  HTML.allSortBtn = document.querySelectorAll("[data-action=sort]");
   // Add event-listeners to btn and run the filter animal list
   HTML.allFilterBtn.forEach((btn) => {
     btn.addEventListener("click", createAnimalList);
+  });
+  HTML.allSortBtn.forEach((btn) => {
+    btn.addEventListener("click", getDataSort);
   });
   loadJSON();
 }
@@ -35,6 +40,7 @@ async function loadJSON() {
 
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
+  filteredAnimals = allAnimals;
 
   // This function is only runing one time, and then the filter button chance the data.
   displayList(allAnimals);
@@ -77,7 +83,6 @@ function displayAnimal(animal) {
 
 // ----- Model -----
 function createAnimalList() {
-  let filteredAnimals;
   // get filter depending on data-filter attribue
   filter = this.dataset.filter;
   // filter allAnimals with correct filter function and put info filterAnmimals
@@ -91,9 +96,70 @@ function createAnimalList() {
   displayList(filteredAnimals);
 }
 
+function getDataSort() {
+  console.log("filteredAnimals", filteredAnimals);
+  let sortFilter = this.dataset.sort;
+  let directionWay = this.dataset.sortDirection;
+
+  let directionControl = () => {
+    if (directionWay === "asc") {
+      return "decs";
+    } else {
+      return "asc";
+    }
+  };
+
+  console.log(directionControl());
+
+  if (sortFilter === "name") {
+    filteredAnimals.sort(compareName);
+  } else if (sortFilter === "type") {
+    filteredAnimals.sort(compareType);
+  } else if (sortFilter === "desc") {
+    filteredAnimals.sort(compareDesc);
+  } else if (sortFilter === "age") {
+    filteredAnimals.sort(compareAge);
+  }
+  displayList(filteredAnimals);
+}
+
+// Campare values
+// a is the object and b is the index in the array
+function compareName(a, b) {
+  if (a.name < b.name) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+function compareType(a, b) {
+  if (a.type < b.type) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+function compareDesc(a, b) {
+  if (a.desc < b.desc) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+function compareAge(a, b) {
+  if (a.age < b.age) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
 // Filtering function which takes a filtering function as an argument
 function getFilteredData(filterFunction) {
-  let filteredAnimals = allAnimals.filter(filterFunction);
+  filteredAnimals = allAnimals.filter(filterFunction);
   return filteredAnimals;
 }
 
