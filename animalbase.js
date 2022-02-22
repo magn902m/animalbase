@@ -116,33 +116,25 @@ function filterList(type) {
   return filteredList;
 }
 
-function sortList(sortBy) {
-  // console.log("filteredList", filteredList);
-  // let type = sortBy.target.dataset.filter;
+function sortList(event) {
   let sortFilter = this.dataset.sort;
-  let directionWay = this.dataset.sortDirection;
+  let sortDir = event.target.dataset.sortDirection;
+  let direction = 1;
+  console.log(sortDir);
 
-  // let directionControl = () => {
-  //   if (directionWay === "asc") {
-  //     return "decs";
-  //   } else {
-  //     return "asc";
-  //   }
-  // };
+  if (sortDir === "asc") {
+    event.target.dataset.sortDirection = "desc";
+  } else {
+    event.target.dataset.sortDirection = "asc";
+  }
 
-  // directionWay = directionControl;
+  if (sortDir === "desc") {
+    direction = -1;
+  } else {
+    direction = 1;
+  }
 
-  // console.log(directionControl());
-
-  // if (sortFilter === "name") {
-  //   filteredList.sort(sortByName);
-  // } else if (sortFilter === "type") {
-  //   filteredList.sort(sortByType);
-  // } else if (sortFilter === "desc") {
-  //   filteredList.sort(sortByDesc);
-  // } else if (sortFilter === "age") {
-  //   filteredList.sort(sortByAge);
-  // }
+  // console.log(sortBy, sortDir);
 
   filteredList.sort(sortByValue);
 
@@ -151,9 +143,9 @@ function sortList(sortBy) {
   function sortByValue(a, b) {
     // console.log(sortFilter);
     if (a[sortFilter] < b[sortFilter]) {
-      return -1;
+      return -1 * direction;
     } else {
-      return 1;
+      return 1 * direction;
     }
   }
 
