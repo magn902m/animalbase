@@ -122,80 +122,40 @@ function sortList(sortBy) {
   let sortFilter = this.dataset.sort;
   let directionWay = this.dataset.sortDirection;
 
-  let directionControl = () => {
-    if (directionWay === "asc") {
-      return "decs";
-    } else {
-      return "asc";
-    }
-  };
-
-  directionWay = directionControl;
-
-  console.log(directionControl());
-
-  if (sortFilter === "name") {
-    filteredList.sort(sortByName);
-  } else if (sortFilter === "type") {
-    filteredList.sort(sortByType);
-  } else if (sortFilter === "desc") {
-    filteredList.sort(sortByDesc);
-  } else if (sortFilter === "age") {
-    filteredList.sort(sortByAge);
-  }
-
-  // filteredList = allAnimals.filter(isCompareAnimals);
-
-  // if (filter !== "*") {
-  //   filteredList = allAnimals.filter(isAnimalsValue);
-  // } else {
-  //   filteredList = allAnimals;
-  // }
-
-  // filteredList = isCompareAnimals(type);
-
-  // function isCompareAnimals(a, b) {
-  //   console.log(animal.type);
-  //   if (a.type === b.type) {
-  //     return -1;
+  // let directionControl = () => {
+  //   if (directionWay === "asc") {
+  //     return "decs";
   //   } else {
-  //     return 1;
+  //     return "asc";
   //   }
+  // };
+
+  // directionWay = directionControl;
+
+  // console.log(directionControl());
+
+  // if (sortFilter === "name") {
+  //   filteredList.sort(sortByName);
+  // } else if (sortFilter === "type") {
+  //   filteredList.sort(sortByType);
+  // } else if (sortFilter === "desc") {
+  //   filteredList.sort(sortByDesc);
+  // } else if (sortFilter === "age") {
+  //   filteredList.sort(sortByAge);
   // }
+
+  filteredList.sort(sortByValue);
+
+  // Campare values
+  // a is the object and b is the index in the array
+  function sortByValue(a, b) {
+    // console.log(sortFilter);
+    if (a[sortFilter] < b[sortFilter]) {
+      return -1;
+    } else {
+      return 1;
+    }
+  }
 
   displayList(filteredList);
-}
-
-// Campare values
-// a is the object and b is the index in the array
-function sortByName(a, b) {
-  if (a.name < b.name) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-
-function sortByType(a, b) {
-  if (a.type < b.type) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-
-function sortByDesc(a, b) {
-  if (a.desc < b.desc) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
-
-function sortByAge(a, b) {
-  if (a.age < b.age) {
-    return -1;
-  } else {
-    return 1;
-  }
 }
