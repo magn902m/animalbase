@@ -13,6 +13,7 @@ const Animal = {
   desc: "-unknown animal-",
   type: "",
   age: 0,
+  star: false,
 };
 
 function start() {
@@ -77,8 +78,35 @@ function displayAnimal(animal) {
   clone.querySelector("[data-field=type]").textContent = animal.type;
   clone.querySelector("[data-field=age]").textContent = animal.age;
 
+  // // TODO: Show star ⭐ or ☆
+  if (animal.star) {
+    clone.querySelector("[data-field=star]").textContent = "⭐";
+  } else {
+    clone.querySelector("[data-field=star]").textContent = "☆";
+  }
+
+  // // TODO: Add event listener to click on star
+
+  clone.querySelector("[data-field=star]").addEventListener("click", starToggle);
+  function starToggle() {
+    // console.log("starToggle");
+    if (animal.star) {
+      animal.star = false;
+    } else {
+      animal.star = true;
+    }
+    console.log(animal);
+    buildList();
+  }
+
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
+}
+
+function buildList() {
+  const currentList = allAnimals; // FUTURE: Filter and sort currentList before displaying
+
+  displayList(currentList);
 }
 
 // ----- Model -----
