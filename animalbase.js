@@ -106,7 +106,7 @@ function displayAnimal(animal) {
   // TODO: Add event listeners for star and winner
 
   clone.querySelector("[data-field=star]").addEventListener("click", starToggle);
-  clone.querySelector("[data-field=winner]").addEventListener("click", tropyhClicked);
+
   function starToggle() {
     // console.log("starToggle");
     if (animal.star === true) {
@@ -118,19 +118,119 @@ function displayAnimal(animal) {
     displayList(filteredList);
   }
 
-  function tropyhClicked(animal, arr) {
-    // console.log("starToggle");
-    // if (animal.winner) {
-    //   animal.winner = false;
-    // } else {
-    //   animal.winner = true;
-    // }
-    // console.log(animal);
-    // buildList();
-  }
+  clone.querySelector("[data-field=winner]").dataset.winner = animal.winner;
+  clone.querySelector("[data-field=winner]").addEventListener("click", clickWinner);
 
+  function clickWinner() {
+    if (animal.winner === true) {
+      animal.winner = false;
+    } else {
+      tryToMakeaWinner(animal);
+      // animal.winner = true;
+    }
+    displayList(filteredList);
+  }
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
+}
+
+function tryToMakeaWinner(selectedAnimal) {
+  const winners = allAnimals.filter((animal) => animal.winner);
+
+  const numberOfWinners = winners.length;
+  const other = winners.filter((animal) => animal.type === selectedAnimal.type).shift();
+
+  // if there is another of the same type
+  if (other !== undefined) {
+    console.log("There can be only one winner of each type!");
+    removeOther(other);
+  } else if (numberOfWinners >= 2) {
+    console.log("There can only be two winners!");
+    removeAorB(winners[0], winners[1]);
+  } else {
+    makeWinner(selectedAnimal);
+  }
+
+  // console.log(`There are ${numberOfWinners} winners`);
+  // console.log(`The other winner of this is ${other.name}`);
+  // console.log(other);
+  // makeWinner(selectedAnimal);
+
+  function removeOther(other) {
+    // ask the user to ignore, or remove "other"
+    document.querySelector("#onlyonekind").classList.remove("dialog");
+    document.querySelector("#onlyonekind .closebutton").addEventListener("click", closeDialog);
+    document
+      .querySelector("#onlyonekind [data-action=remove1]")
+      .addEventListener("click", clickRemoveOther);
+
+    // if ignore - do nothing ..
+    function closeDialog() {
+      document.querySelector("#onlyonekind").classList.add("dialog");
+      document.querySelector("#onlyonekind .closebutton").removeEventListener("click", closeDialog);
+      document
+        .querySelector("#onlyonekind [data-action=remove1]")
+        .removeEventListener("click", clickRemoveOther);
+    }
+
+    // if remove other:
+    function clickRemoveOther() {
+      removeWinner(other);
+      makeWinner(selectedAnimal);
+      displayList(filteredList);
+      closeDialog();
+    }
+  }
+
+  function removeAorB(winnerA, winnerB) {
+    // ask the user to ignnore, or remove A or B
+    document.querySelector("#onlytwowinners").classList.remove("dialog");
+    document.querySelector("#onlytwowinners .closebutton").addEventListener("click", closeDialog);
+    document
+      .querySelector("#onlytwowinners [data-action=remove1]")
+      .addEventListener("click", clickRemoveA);
+    document
+      .querySelector("#onlytwowinners [data-action=remove2]")
+      .addEventListener("click", clickRemoveB);
+
+    // if ignore - do nothing ..
+    function closeDialog() {
+      document.querySelector("#onlytwowinners").classList.add("dialog");
+      document
+        .querySelector("#onlytwowinners .closebutton")
+        .removeEventListener("click", closeDialog);
+      document
+        .querySelector("#onlytwowinners [data-action=remove1]")
+        .removeEventListener("click", clickRemoveA);
+      document
+        .querySelector("#onlytwowinners [data-action=remove2]")
+        .removeEventListener("click", clickRemoveB);
+    }
+
+    function clickRemoveA() {
+      // if remove other:
+      removeWinner(winnerA);
+      makeWinner(selectedAnimal);
+      displayList(filteredList);
+      closeDialog();
+    }
+
+    function clickRemoveB() {
+      // else - if removeB
+      removeWinner(winnerB);
+      makeWinner(selectedAnimal);
+      displayList(filteredList);
+      closeDialog();
+    }
+  }
+
+  function removeWinner(winnerAnimal) {
+    winnerAnimal.winner = false;
+  }
+
+  function makeWinner(animal) {
+    animal.winner = true;
+  }
 }
 
 // ----- Model -----
@@ -167,10 +267,10 @@ function filterList(filteredList) {
 }
 
 function sortList(event) {
-  console.log("-", event);
+  // console.log("-", event);
   const sortBy = event.target.dataset.sort;
   const sortDir = event.target.dataset.sortDirection;
-  console.log(sortDir, "-", sortBy, "-", event);
+  // console.log(sortDir, "-", sortBy, "-", event);
 
   // find "old" sortBy element
   const oldElement = document.querySelector(`[data-sort='${settings.sortBy}']`);
