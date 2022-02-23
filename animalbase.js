@@ -4,7 +4,6 @@ window.addEventListener("DOMContentLoaded", start);
 
 const HTML = {};
 let allAnimals = [],
-  filter = "*",
   filteredList;
 
 // The prototype for all animals:
@@ -14,6 +13,14 @@ const Animal = {
   type: "",
   age: 0,
   star: false,
+  winner: false,
+};
+
+const settings = {
+  filter: "*",
+  sortBy: "name",
+  sortDir: "asc",
+  direction: 1,
 };
 
 function start() {
@@ -78,16 +85,27 @@ function displayAnimal(animal) {
   clone.querySelector("[data-field=type]").textContent = animal.type;
   clone.querySelector("[data-field=age]").textContent = animal.age;
 
-  // // TODO: Show star ⭐ or ☆
+  // TODO: Display winner
+  if (animal.winner) {
+    clone.querySelector("[data-field=winner]").textContent = "🏆";
+  } else {
+    clone.querySelector("[data-field=winner]").style.filter = "grayscale(100%)";
+  }
+
+  // Display star
+
+  // Show star ⭐ or ☆
   if (animal.star) {
     clone.querySelector("[data-field=star]").textContent = "⭐";
   } else {
-    clone.querySelector("[data-field=star]").textContent = "☆";
+    // clone.querySelector("[data-field=star]").textContent = "☆";
+    clone.querySelector("[data-field=star]").style.filter = "grayscale(100%)";
   }
 
-  // // TODO: Add event listener to click on star
+  // TODO: Add event listeners for star and winner
 
   clone.querySelector("[data-field=star]").addEventListener("click", starToggle);
+  clone.querySelector("[data-field=winner]").addEventListener("click", tropyhClicked);
   function starToggle() {
     // console.log("starToggle");
     if (animal.star) {
@@ -95,18 +113,23 @@ function displayAnimal(animal) {
     } else {
       animal.star = true;
     }
-    console.log(animal);
+    // console.log(animal);
     buildList();
+  }
+
+  function tropyhClicked(animal, arr) {
+    // console.log("starToggle");
+    // if (animal.winner) {
+    //   animal.winner = false;
+    // } else {
+    //   animal.winner = true;
+    // }
+    // console.log(animal);
+    // buildList();
   }
 
   // append clone to list
   document.querySelector("#list tbody").appendChild(clone);
-}
-
-function buildList() {
-  const currentList = allAnimals; // FUTURE: Filter and sort currentList before displaying
-
-  displayList(currentList);
 }
 
 // ----- Model -----
@@ -114,7 +137,7 @@ function createAnimalList(btnClickedElm) {
   // console.log(btnClickedElm);
   let type = btnClickedElm.target.dataset.filter;
   // get filter depending on data-filter attribue
-  filter = this.dataset.filter;
+  settings.filter = this.dataset.filter;
   // filter allAnimals with correct filter function and put info filterAnmimals
   filteredList = filterList(type);
   displayList(filteredList);
@@ -124,18 +147,16 @@ function createAnimalList(btnClickedElm) {
 // Filtering function which takes a filtering function as an argument
 function filterList(type) {
   // console.log(type);
-  // filteredList = allAnimals.filter(filterFunction);
-  // filteredList = allAnimals.filter(isAnimalsType);
   filteredList = allAnimals;
 
-  if (filter !== "*") {
+  if (settings.filter !== "*") {
     filteredList = allAnimals.filter(isAnimalsType);
   } else {
     filteredList = allAnimals;
   }
 
   function isAnimalsType(animal) {
-    if (animal.type === filter) {
+    if (animal.type === settings.filter) {
       return true;
     } else {
       return false;
@@ -145,10 +166,19 @@ function filterList(type) {
 }
 
 function sortList(event) {
-  let sortFilter = this.dataset.sort;
-  let sortDir = event.target.dataset.sortDirection;
-  let direction = 1;
-  console.log(sortDir);
+  const sortBy = event.target.dataset.sort;
+  const sortDir = event.target.dataset.sortDirection;
+  // console.log(sortDir);
+
+  // find "old" sortBy element
+  const oldElement = document.querySelector(`[data-sort='${settings.sortBy}']`);
+  oldElement.classList.remove("sortby");
+  // console.log(oldElement);
+  // indicate active sort
+  event.target.classList.add("sortby");
+  settings.sortBy = sortBy;
+
+  // console.log(event);
 
   if (sortDir === "asc") {
     event.target.dataset.sortDirection = "desc";
@@ -157,25 +187,29 @@ function sortList(event) {
   }
 
   if (sortDir === "desc") {
-    direction = -1;
+    settings.direction = -1;
   } else {
-    direction = 1;
+    settings.direction = 1;
   }
-
-  // console.log(sortBy, sortDir);
 
   filteredList.sort(sortByValue);
 
   // Campare values
   // a is the object and b is the index in the array
   function sortByValue(a, b) {
-    // console.log(sortFilter);
-    if (a[sortFilter] < b[sortFilter]) {
-      return -1 * direction;
+    // console.log(sortBy);
+    if (a[sortBy] < b[sortBy]) {
+      return -1 * settings.direction;
     } else {
-      return 1 * direction;
+      return 1 * settings.direction;
     }
   }
 
   displayList(filteredList);
+}
+
+function buildList() {
+  const currentList = filterList(allAnimals);
+  const sortedList = sortList(currentList);
+  displayList(sortedList);
 }
