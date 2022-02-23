@@ -49,8 +49,8 @@ async function loadJSON() {
 function prepareObjects(jsonData) {
   allAnimals = jsonData.map(preapareObject);
   filteredList = allAnimals;
-
   // This function is only runing one time, and then the filter button chance the data.
+  // buildList();
   displayList(allAnimals);
 }
 
@@ -99,7 +99,8 @@ function displayAnimal(animal) {
     clone.querySelector("[data-field=star]").textContent = "⭐";
   } else {
     // clone.querySelector("[data-field=star]").textContent = "☆";
-    clone.querySelector("[data-field=star]").style.filter = "grayscale(100%)";
+    clone.querySelector("[data-field=star]").textContent = "⭐";
+    clone.querySelector("td[data-field=star]").style.filter = "grayscale(100%)";
   }
 
   // TODO: Add event listeners for star and winner
@@ -108,13 +109,13 @@ function displayAnimal(animal) {
   clone.querySelector("[data-field=winner]").addEventListener("click", tropyhClicked);
   function starToggle() {
     // console.log("starToggle");
-    if (animal.star) {
+    if (animal.star === true) {
       animal.star = false;
     } else {
       animal.star = true;
     }
     // console.log(animal);
-    buildList();
+    displayList(filteredList);
   }
 
   function tropyhClicked(animal, arr) {
@@ -145,7 +146,7 @@ function createAnimalList(btnClickedElm) {
 
 // // ----- Controller -----
 // Filtering function which takes a filtering function as an argument
-function filterList(type) {
+function filterList(filteredList) {
   // console.log(type);
   filteredList = allAnimals;
 
@@ -166,9 +167,10 @@ function filterList(type) {
 }
 
 function sortList(event) {
+  console.log("-", event);
   const sortBy = event.target.dataset.sort;
   const sortDir = event.target.dataset.sortDirection;
-  // console.log(sortDir);
+  console.log(sortDir, "-", sortBy, "-", event);
 
   // find "old" sortBy element
   const oldElement = document.querySelector(`[data-sort='${settings.sortBy}']`);
@@ -204,6 +206,9 @@ function sortList(event) {
       return 1 * settings.direction;
     }
   }
+
+  settings.sortBy = sortBy;
+  settings.sortDir = sortDir;
 
   displayList(filteredList);
 }
